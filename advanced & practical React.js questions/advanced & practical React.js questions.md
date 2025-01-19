@@ -283,7 +283,6 @@ function useFetch(url) {
 
 export default useFetch;
 ```
-# React Interview Questions
 
 ## 13. How do you ensure that components re-render less?
 To reduce unnecessary re-renders in React:
