@@ -317,7 +317,6 @@ You would go for **Redux** or other third-party tools when:
 - **Debugging**: Redux provides a better debugging experience due to its predictable flow and middleware support, making it easier to track changes in the state.
 
 In small or medium-sized applications, `useReducer` and `Context API` might suffice, but for large-scale apps, Redux offers more robust solutions.
-# React Interview Questions
 
 ## 16. Have you ever used vanilla JS with a React app to offer a robust experience?
 Yes, there are situations where **vanilla JavaScript** can be used alongside a React app to offer a more **robust** experience, especially when:
@@ -424,7 +423,6 @@ src/
 - **Utils**: This folder contains utility functions or helper files.
 
 This structure helps to keep the codebase organized and maintainable, especially as the project grows.
-# React FAQs
 
 ### 21. What design system do you follow?
 I typically follow design systems such as **Material UI** or a custom design system based on the needs of the project. Material UI provides a set of pre-designed, responsive components that align well with modern design principles. Custom design systems are also great for maintaining consistency in design, especially for larger applications. These systems ensure uniformity, scalability, and ease of maintenance throughout the application.
@@ -461,11 +459,54 @@ Yes, I use **TailwindCSS** for styling in React projects. TailwindCSS offers uti
 - **Customizable and responsive:** Tailwind provides a highly customizable configuration and includes built-in responsive design utilities.
 
 ### 26. Why does calling a function such as `func()` in events inside put the app on the crash loop but not with `func` or `() => func()`?
-When you call a function like `func()` directly in an event handler, it is executed immediately when the component is rendered, which can lead to side effects, including infinite loops if the function modifies state or causes a re-render. For example, if the function updates the state, it will trigger a re-render and invoke the function again, leading to a crash loop.
 
-On the other hand:
-- `func` or `() => func()` passes a reference to the function, ensuring that it’s only called when the event is triggered, not immediately upon rendering.
-- `() => func()` is an arrow function that ensures the function is called with the correct `this` context (if used within class components) and delays its execution until the event occurs.
+## 1. Calling a Function Directly (func()):
+When you write `onClick={func()}`, the function `func` is executed immediately during the render phase, not when the event occurs. This means `func` runs every time the component renders, which can lead to:
 
-By using `func` or `() => func()`, you avoid triggering the function prematurely during rendering, which helps to prevent unnecessary re-renders and potential crash loops.
+- **Side Effects**: If `func` updates state or props, it can trigger additional re-renders, potentially causing an infinite loop.
+- **Crash Loop**: If `func` causes a state change that triggers a re-render, which in turn calls `func` again, you might enter a crash loop due to continuous re-renders.
+
+**Example:**
+```jsx
+function handleClick() {
+    setCount(count + 1); // Updates state and triggers a re-render
+}
+
+// Causes the function to run immediately, leading to potential issues
+<button onClick={handleClick()} />
+```
+
+## 2. Passing the Function Reference (func):
+Writing `onClick={func}` passes the function reference, meaning the function will only execute when the event (e.g., a click) actually occurs. This is the intended behavior for event handlers, as the function is called in response to the user's action, not during rendering.
+
+**Example:**
+```jsx
+function handleClick() {
+    setCount(count + 1); // Updates state when the button is clicked
+}
+
+// Passes the reference to the function, which is called when the button is clicked
+<button onClick={handleClick} />
+```
+
+## 3. Using an Arrow Function (() => func()):
+Using an arrow function `onClick={() => func()}` creates a new function that calls `func` when the event occurs. This is useful when you need to pass arguments to `func` or when `func` should be called with specific context or conditions. The arrow function itself is not called during rendering, but only when the event triggers.
+
+**Example:**
+```jsx
+function handleClick() {
+    setCount(count + 1); // Updates state when the button is clicked
+}
+
+// Arrow function calls handleClick when the button is clicked
+<button onClick={() => handleClick()} />
+```
+
+## Summary:
+- **func()**: Executes the function immediately during rendering, causing potential re-renders and crash loops.
+- **func**: Passes the function reference, executing only when the event occurs.
+- **() => func()**: Creates a new function that calls `func` during the event, allowing for flexibility like passing arguments.
+
+To avoid crash loops, always pass a function reference or use an arrow function for event handlers, not the result of a function call.
+
 
